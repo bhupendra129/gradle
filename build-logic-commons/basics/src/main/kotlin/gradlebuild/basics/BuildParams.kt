@@ -284,7 +284,7 @@ val Project.performanceBaselines: String?
 
 val Project.performanceChannel: Provider<String>
     get() = environmentVariable(PERFORMANCE_CHANNEL_ENV).orElse(provider {
-        val channelSuffix = if (OperatingSystem.current().isLinux) "" else "-${OperatingSystem.current().familyName.toLowerCase()}"
+        val channelSuffix = if (OperatingSystem.current().isLinux) "" else "-${OperatingSystem.current().familyName.lowercase()}"
         "commits$channelSuffix-${buildBranch.get()}"
      })
 
@@ -358,10 +358,7 @@ val Project.predictiveTestSelectionEnabled: Provider<Boolean>
         .map { it.toBoolean() }
         .orElse(
             buildBranch.zip(buildRunningOnCi) { branch, ci ->
-                val protectedBranches = listOf("master", "release")
-                ci && !protectedBranches.contains(branch)
-                    && !branch.startsWith("pre-test/")
-                    && !branch.startsWith("gh-readonly-queue/")
+                ci && !listOf("master", "release", "gh-readonly-queue/").any { branch.startsWith(it) }
             }
         ).zip(project.rerunAllTests) { enabled, rerunAllTests ->
             enabled && !rerunAllTests

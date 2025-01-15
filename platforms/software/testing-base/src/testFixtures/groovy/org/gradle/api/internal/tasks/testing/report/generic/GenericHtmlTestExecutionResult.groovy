@@ -15,13 +15,19 @@
  */
 package org.gradle.api.internal.tasks.testing.report.generic
 
+import com.google.common.collect.HashMultiset
+import com.google.common.collect.ImmutableMultiset
 import com.google.common.collect.Iterables
+import com.google.common.collect.Multiset
+import com.google.common.collect.Multisets
 import org.gradle.api.tasks.testing.TestResult
 import org.gradle.util.Path
 import org.gradle.util.internal.TextUtil
 import org.hamcrest.Matcher
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.jsoup.nodes.Element
+import org.jsoup.select.Elements
 
 import java.nio.file.Files
 import java.util.stream.Collectors
@@ -99,24 +105,61 @@ class GenericHtmlTestExecutionResult implements GenericTestExecutionResult {
     }
 
     private static class HtmlTestPathExecutionResult implements TestPathExecutionResult {
-        private String pathDisplayName
-        private File htmlFile
-        private List<String> testsExecuted = []
-        private List<String> testsSucceeded = []
-        private List<String> testsFailures = []
-        private List<String> testsSkipped = []
-        private Document html
+        private final List<String> rootNames = []
+        private final Map<String, Element> rootElements = [:]
 
         HtmlTestPathExecutionResult(File htmlFile) {
-            this.htmlFile = htmlFile;
-            this.html = Jsoup.parse(htmlFile, null)
-            parseFile()
+            Document html = Jsoup.parse(htmlFile, null)
+            Element rootTabContainer = html.selectFirst('.tab-container')
+            Elements tabs = rootTabContainer.select('> .tab')
+            Elements tabNames = rootTabContainer.select('> .tabLinks > li')
+            for (int i = 0; i < tabs.size(); i++) {
+                def rootName = tabNames.get(i).text()
+                rootNames.add(rootName)
+                rootElements[rootName] = tabs.get(i)
+            }
+        }
+
+        @Override
+        TestPathRootExecutionResult onlyRoot() {
+            assertThat("has multiple roots: " + rootElements.keySet(), rootElements.size(), equalTo(1))
+            return new HtmlTestPathRootExecutionResult(rootElements.values().first())
+        }
+
+        @Override
+        TestPathRootExecutionResult root(String rootName) {
+            assertThat(rootElements.keySet(), hasItems(rootName))
+            return new HtmlTestPathRootExecutionResult(rootElements[rootName])
+        }
+
+        @Override
+        List<String> getRootNames() {
+            return rootNames
+        }
+    }
+
+    private static class HtmlTestPathRootExecutionResult implements TestPathRootExecutionResult {
+        private Element html
+        private Multiset<String> testsExecuted = HashMultiset.create()
+        private Multiset<String> testsSucceeded = HashMultiset.create()
+        private Multiset<String> testsFailures = HashMultiset.create()
+        private Multiset<String> testsSkipped = HashMultiset.create()
+
+        HtmlTestPathRootExecutionResult(Element html) {
+            this.html = html
+            extractCases()
+        }
+
+        private void extractCases() {
+            extractTestCaseTo("tr > td.success:eq(0)", testsSucceeded)
+            extractTestCaseTo("tr > td.failures:eq(0)", testsFailures)
+            extractTestCaseTo("tr > td.skipped:eq(0)", testsSkipped)
         }
 
         private extractTestCaseTo(String cssSelector, Collection<String> target) {
             html.select(cssSelector).each {
-                def testDisplayName = it.textNodes().first().wholeText.trim()
-                def testName = hasNameColumn() ? it.nextElementSibling().text() : testDisplayName
+                def testDisplayName = it.text().trim()
+                def testName = hasNameColumn() ? it.nextElementSibling().text().trim() : testDisplayName
                 testsExecuted << testName
                 target << testName
             }
@@ -126,39 +169,31 @@ class GenericHtmlTestExecutionResult implements GenericTestExecutionResult {
             return html.select('tr > th').size() == 7
         }
 
-        private void parseFile() {
-            // " > TestClass" -> "TestClass"
-            pathDisplayName = html.select('div.breadcrumbs').first().textNodes().last().wholeText.trim().substring(3)
-            extractTestCaseTo("tr > td.success:eq(0)", testsSucceeded)
-            extractTestCaseTo("tr > td.failures:eq(0)", testsFailures)
-            extractTestCaseTo("tr > td.skipped:eq(0)", testsSkipped)
-        }
-
         @Override
-        TestPathExecutionResult assertChildrenExecuted(String... testNames) {
-            def executedAndNotSkipped = testsExecuted - testsSkipped
-            assertThat(executedAndNotSkipped, equalTo(testNames as Set))
+        TestPathRootExecutionResult assertChildrenExecuted(String... testNames) {
+            def executedAndNotSkipped = Multisets.difference(testsExecuted, testsSkipped)
+            assertThat(executedAndNotSkipped, equalTo(ImmutableMultiset.copyOf(testNames)))
             return this
         }
 
         @Override
-        TestPathExecutionResult assertChildCount(int tests, int failures, int errors) {
+        TestPathRootExecutionResult assertChildCount(int tests, int failures, int errors) {
             assert tests == testsExecuted.size()
             assert failures == testsFailures.size()
             return this
         }
 
         @Override
-        TestPathExecutionResult assertStdout(Matcher<? super String> matcher) {
+        TestPathRootExecutionResult assertStdout(Matcher<? super String> matcher) {
             return assertOutput('standard output', matcher)
         }
 
         @Override
-        TestPathExecutionResult assertStderr(Matcher<? super String> matcher) {
+        TestPathRootExecutionResult assertStderr(Matcher<? super String> matcher) {
             return assertOutput('error output', matcher)
         }
 
-        private TestPathExecutionResult assertOutput(heading, Matcher<? super String> matcher) {
+        private TestPathRootExecutionResult assertOutput(heading, Matcher<? super String> matcher) {
             def tabs = html.select("div.tab")
             def tab = tabs.find { it.select("h2").text() == heading }
             assert matcher.matches(tab ? TextUtil.normaliseLineSeparators(tab.select("span > pre").first().textNodes().first().wholeText) : "")
@@ -166,7 +201,7 @@ class GenericHtmlTestExecutionResult implements GenericTestExecutionResult {
         }
 
         @Override
-        TestPathExecutionResult assertHasResult(TestResult.ResultType expectedResultType) {
+        TestPathRootExecutionResult assertHasResult(TestResult.ResultType expectedResultType) {
             assert getResultType() == expectedResultType
             return this
         }
@@ -185,21 +220,21 @@ class GenericHtmlTestExecutionResult implements GenericTestExecutionResult {
         }
 
         @Override
-        TestPathExecutionResult assertFailureMessages(Matcher<? super String> matcher) {
+        TestPathRootExecutionResult assertFailureMessages(Matcher<? super String> matcher) {
             def detailsElem = html.selectFirst('.result-details pre')
             assertThat(detailsElem == null ? '' : detailsElem.text(), matcher)
             return this
         }
 
         @Override
-        TestPathExecutionResult assertMetadata(List<String> expectedKeys) {
+        TestPathRootExecutionResult assertMetadata(List<String> expectedKeys) {
             def metadataKeys = html.select('.metadata td.key').collect() { it.text() }
             assertThat(metadataKeys, equalTo(expectedKeys))
             return this
         }
 
         @Override
-        TestPathExecutionResult assertMetadata(LinkedHashMap<String, String> expectedMetadata) {
+        TestPathRootExecutionResult assertMetadata(LinkedHashMap<String, String> expectedMetadata) {
             def metadataKeys = html.select('.metadata td.key').collect() { it.text() }
             def metadataRenderedValues = html.select('.metadata td.value').collect { it.html()}
             def metadata = [metadataKeys, metadataRenderedValues].transpose().collectEntries { key, value -> [key, value] }

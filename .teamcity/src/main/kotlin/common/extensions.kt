@@ -158,9 +158,9 @@ fun BuildType.applyDefaultSettings(os: Os = Os.LINUX, arch: Arch = Arch.AMD64, b
     if (os !in listOf(Os.WINDOWS, Os.MACOS)) {
         steps {
             exec {
-                name = "CAPTURE_EC2_METADATA"
+                name = "EC2_BUILD_CUSTOMIZATIONS"
                 executionMode = BuildStep.ExecutionMode.ALWAYS
-                path = ".teamcity/scripts/ec2-metadata.sh"
+                path = ".teamcity/scripts/configure_build_env_on_ec2.sh"
 
                 conditions {
                     requiresEc2Agent()
@@ -219,7 +219,7 @@ fun BuildSteps.checkCleanM2AndAndroidUserHome(os: Os = Os.LINUX, buildType: Buil
 
 fun BuildStep.onlyRunOnGitHubMergeQueueBranch() {
     conditions {
-        matches("teamcity.build.branch", "(pre-test/.*)|(gh-readonly-queue/.*)")
+        matches("teamcity.build.branch", "gh-readonly-queue/.*")
     }
 }
 
@@ -306,8 +306,8 @@ fun promotionBuildParameters(
     return listOf(
         "-PcommitId=%dep.$dependencyBuildId.build.vcs.number%",
         extraParameters,
-        "'-PgitUserName=$gitUserName'",
-        "'-PgitUserEmail=$gitUserEmail'",
+        "\"-PgitUserName=$gitUserName\"",
+        "\"-PgitUserEmail=$gitUserEmail\"",
         pluginPortalUrlOverride,
         "-DenablePredictiveTestSelection=false",
         "%additional.gradle.parameters%"
