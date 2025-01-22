@@ -10,7 +10,15 @@
 <meta name="twitter:description" content="TBD">
 <meta name="twitter:image" content="https://gradle.org/images/releases/gradle-8.13.png">
 
-The Gradle team is excited to announce Gradle @version@.
+Gradle @version@ is the first patch release for Gradle 8.12.
+
+It fixes the following issues:
+
+* TODO
+
+We recommend users upgrade to @version@ instead of 8.12.
+
+***
 
 This release features [1](), [2](), ... [n](), and more.
 
@@ -157,7 +165,7 @@ Run with --stacktrace to get the full stack trace of this deprecation warning.
 ## Promoted features
 
 Promoted features are features that were incubating in previous versions of Gradle but are now supported and subject to backward compatibility.
-See the User Manual section on the “[Feature Lifecycle](userguide/feature_lifecycle.html)” for more information.
+See the User Manual section on the "[Feature Lifecycle](userguide/feature_lifecycle.html)" for more information.
 
 The following are the features that have been promoted in this Gradle release.
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 the original author or authors.
+ * Copyright 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,18 @@
  * limitations under the License.
  */
 
-plugins {
-    id("com.autonomousapps.dependency-analysis")
+package org.gradle.internal.operations;
+
+import org.gradle.internal.service.scopes.Scope;
+import org.gradle.internal.service.scopes.ServiceScope;
+
+@ServiceScope(Scope.CrossBuildSession.class)
+public interface BuildOperationsParameters {
+
+    /**
+     * Whether build operations should be emitted more extensively
+     * for observability purposes.
+     */
+    boolean isVerbose();
+
 }
