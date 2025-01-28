@@ -217,6 +217,13 @@ data class CIBuildModel(
                             JvmCategory.MIN_VERSION_WINDOWS_MAC,
                             QUICK_CROSS_VERSION_BUCKETS.size,
                         ),
+                        TestCoverage(
+                            44,
+                            TestType.EMBEDDED,
+                            Os.LINUX,
+                            JvmCategory.MAX_VERSION,
+                            DEFAULT_LINUX_FUNCTIONAL_TEST_BUCKET_SIZE,
+                        ),
                     ),
                 performanceTests = performanceRegressionTestCoverages,
             ),
@@ -604,6 +611,7 @@ enum class TestType(
     PARALLEL(false, true, false),
 
     NO_DAEMON(false, true, false, 300),
+    EMBEDDED(false, true, false),
     CONFIG_CACHE(false, true, false),
     ISOLATED_PROJECTS(false, true, false),
     SOAK(false, false, false),
