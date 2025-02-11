@@ -35,6 +35,15 @@ The previous step will help you identify potential problems by issuing deprecati
 . Run `gradle wrapper --gradle-version {gradleVersion}` to update the project to {gradleVersion}.
 . Try to run the project and debug any errors using the <<troubleshooting.adoc#troubleshooting, Troubleshooting Guide>>.
 
+[[changes_8.14]]
+== Upgrading from 8.13 and earlier
+
+=== Changes to Settings level defaults
+
+The `Settings.getDefaults()` incubating method introduced in 8.10 has been removed.
+Use`Settings.defaults(Action<SharedModelDefaults>)` method, taking a lambda, instead.
+The change is driven by the need to interpret such default values in the scope of individual projects and not at Settings level.
+
 [[changes_8.13]]
 == Upgrading from 8.12 and earlier
 
