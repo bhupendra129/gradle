@@ -3,7 +3,7 @@ package org.gradle.sample.transform.javamodules;
 
 import org.gradle.api.Action;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
