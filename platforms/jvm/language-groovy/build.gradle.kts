@@ -4,13 +4,6 @@ plugins {
 
 description = "Adds support for building Groovy projects"
 
-errorprone {
-    disabledChecks.addAll(
-        "ModifyCollectionInEnhancedForLoop", // 1 occurrences
-        "UnusedMethod", // 4 occurrences
-    )
-}
-
 dependencies {
     api(projects.serviceProvider)
     api(projects.baseServices)
@@ -54,10 +47,10 @@ dependencies {
     testFixturesImplementation(projects.core)
     testFixturesImplementation(projects.baseServices)
     testFixturesImplementation(projects.internalIntegTesting)
-    testFixturesImplementation(testFixtures(projects.modelCore))
+    testFixturesImplementation(testFixtures(projects.modelReflect))
     testFixturesImplementation(libs.guava)
 
-    integTestImplementation(testFixtures(projects.modelCore))
+    integTestImplementation(testFixtures(projects.modelReflect))
     integTestImplementation(libs.commonsLang)
     integTestImplementation(libs.javaParser) {
         because("The Groovy docs inspects the dependencies at compile time")

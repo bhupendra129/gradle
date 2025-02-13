@@ -20,6 +20,7 @@ dependencies {
     api(projects.fileOperations)
     api(projects.logging)
     api(projects.messaging)
+    api(projects.modelCore)
     api(projects.reporting)
     api(projects.testingBase)
     api(projects.testingBaseInfrastructure)
@@ -39,7 +40,6 @@ dependencies {
     implementation(projects.functional)
     implementation(projects.jvmServices)
     implementation(projects.loggingApi)
-    implementation(projects.modelCore)
     implementation(projects.platformBase)
     implementation(projects.testingJvmInfrastructure)
 
@@ -50,7 +50,8 @@ dependencies {
     implementation(libs.slf4jApi)
 
     testImplementation(testFixtures(projects.core))
-    testImplementation(testFixtures(projects.modelCore))
+    testImplementation(testFixtures(projects.modelReflect))
+    testImplementation(testFixtures(projects.time))
 
     integTestImplementation(testFixtures(projects.testingBase))
     integTestImplementation(testFixtures(projects.languageGroovy))

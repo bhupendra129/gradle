@@ -23,7 +23,7 @@ abstract class ExternalModulesExtension(isBundleGroovy4: Boolean) {
     val groovyVersion = if (isBundleGroovy4) "4.0.22" else "3.0.22"
     val groovyGroup = if (isBundleGroovy4) "org.apache.groovy" else "org.codehaus.groovy"
 
-    val configurationCacheReportVersion = "1.23"
+    val configurationCacheReportVersion = "1.24"
     val gradleIdeStarterVersion = "0.5"
     val kotlinVersion = "2.0.21"
 
@@ -122,6 +122,7 @@ abstract class ExternalModulesExtension(isBundleGroovy4: Boolean) {
     val kotlinCompilerEmbeddable = futureKotlin("compiler-embeddable")
     val kotlinReflect = futureKotlin("reflect")
     val kotlinStdlib = futureKotlin("stdlib")
+    val kotlinJvmAbiGenEmbeddable = "org.jetbrains.kotlin:jvm-abi-gen-embeddable"
     val kotlinxSerializationCore = "org.jetbrains.kotlinx:kotlinx-serialization-core"
     val kotlinxSerializationJson = "org.jetbrains.kotlinx:kotlinx-serialization-json"
     val kryo = "com.esotericsoftware.kryo:kryo"

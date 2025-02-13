@@ -62,7 +62,6 @@ unassigned {
 unassigned {
     subproject("core")
     subproject("build-events")
-    subproject("diagnostics")
     subproject("composite-builds")
     subproject("core-api")
 }
@@ -127,6 +126,7 @@ val core = platform("core") {
     // Core Configuration Module
     module("core-configuration") {
         subproject("api-metadata")
+        subproject("base-diagnostics")
         subproject("base-services-groovy")
         subproject("bean-serialization-services")
         subproject("configuration-cache")
@@ -158,6 +158,7 @@ val core = platform("core") {
         subproject("stdlib-kotlin-extensions")
         subproject("stdlib-serialization-codecs")
         subproject("model-core")
+        subproject("model-reflect")
         subproject("model-groovy")
     }
 
@@ -225,6 +226,7 @@ val software = platform("software") {
     subproject("reporting")
     subproject("security")
     subproject("signing")
+    subproject("software-diagnostics")
     subproject("testing-base")
     subproject("testing-base-infrastructure")
     subproject("test-suites-base")
