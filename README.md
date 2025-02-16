@@ -23,7 +23,7 @@
 
 ## 🐘 **Gradle Build Tool** 
 
-**[Gradle](https://gradle.org/)** is a highly scalable build automation tool designed to handle everything from large, multi-project enterprise builds to quick development tasks across various languages. Gradle’s modular, performance-oriented architecture seamlessly integrates with development environments, making it a go-to solution for building, testing, and deploying applications on **Java**, **Kotlin**, **Scala**, **Android**, **Groovy**, **C++**, and **Swift**.
+**[Gradle](https://gradle.org/)** is a highly scalable build automation tool designed to handle everything from large, multi-project enterprise builds to quick development tasks across various languages. Gradle’s modular, performance-oriented architecture seamlessly integrates with development environments, making it a go-to solution for building, testing, and deploying applications on **Java**, **Kotlin**, **Scala**, **Android**, **Groovy**, **C++** and **Swift**.
 
 > For a comprehensive overview, please visit the [official Gradle project homepage](https://gradle.org).
 
@@ -61,7 +61,7 @@ Gradle is built to work smoothly with a variety of Integrated Development Enviro
 
 ### 🎓 **Learning Resources for Gradle**
 
-Kickstart your Gradle knowledge with courses, guides, and community support tailored to various experience levels:
+Kickstart your Gradle knowledge with courses, guides, and community support tailored to various experience levels.
 
 - **[DPE University Free Courses](https://dpeuniversity.gradle.com/app/catalog)**: A collection of hands-on courses for learning Gradle, complete with project-based tasks to improve real-world skills.
 - **[Gradle Community Resources](https://community.gradle.org/resources/)**: Discover a range of resources, tutorials, and guides to support your Gradle journey, from foundational concepts to advanced practices.
